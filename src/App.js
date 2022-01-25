@@ -53,6 +53,14 @@ class App extends Component {
     opponentChoiceImageUrl: '',
   }
 
+  onChoose = choice => {
+    const {id, ImageUrl} = choice
+    this.setState(
+      {yourChoice: id, yourChoiceImageUrl: ImageUrl},
+      this.getOpponentChoice,
+    )
+  }
+
   getGameResult = () => {
     const {yourChoice, opponentChoice} = this.state
     if (yourChoice === 'ROCK') {
@@ -100,52 +108,55 @@ class App extends Component {
     }
   }
 
-  getMyChoice = event => {
-    const selectedChoice = choicesList.find(eachItem => {
-      if (eachItem.imageUrl === event.target.src) {
-        return true
-      }
-      return false
-    })
+  getOpponentChoice = () => {
     const maxLimit = choicesList.length
-    const yourChoice = selectedChoice.id
-    const yourChoiceImageUrl = event.target.src
     const opponentId = Math.floor(Math.random() * maxLimit)
     const opponentChoice = choicesList[opponentId].id
     const opponentChoiceImageUrl = choicesList[opponentId].imageUrl
-    this.setState(
-      {yourChoice, opponentChoice, yourChoiceImageUrl, opponentChoiceImageUrl},
-      this.getGameResult,
-    )
+    this.setState({opponentChoice, opponentChoiceImageUrl}, this.getGameResult)
   }
 
-  renderPlayingGame = () => (
-    <ChoiceContainer>
-      <ChoiceContainer2>
+  renderPlayingGame = () => {
+    const onClickRockImage = () =>
+      this.onChoose({id: choicesList[0].id, ImageUrl: choicesList[0].imageUrl})
+    const onClickScissorsImage = () =>
+      this.onChoose({id: choicesList[1].id, ImageUrl: choicesList[1].imageUrl})
+    const onClickPapersImage = () =>
+      this.onChoose({id: choicesList[2].id, ImageUrl: choicesList[2].imageUrl})
+    return (
+      <ChoiceContainer>
+        <ChoiceContainer2>
+          <BtnElement
+            onClick={onClickRockImage}
+            type="button"
+            data-testid="rockButton"
+          >
+            <ChoiceImage
+              alt={choicesList[0].id}
+              src={choicesList[0].imageUrl}
+            />
+          </BtnElement>
+          <BtnElement
+            onClick={onClickScissorsImage}
+            type="button"
+            data-testid="scissorsButton"
+          >
+            <ChoiceImage
+              alt={choicesList[1].id}
+              src={choicesList[1].imageUrl}
+            />
+          </BtnElement>
+        </ChoiceContainer2>
         <BtnElement
-          onClick={this.getMyChoice}
-          type="button"
-          data-testid="rockButton"
-        >
-          <ChoiceImage alt={choicesList[0].id} src={choicesList[0].imageUrl} />
-        </BtnElement>
-        <BtnElement
-          onClick={this.getMyChoice}
+          onClick={onClickPapersImage}
           type="button"
           data-testid="paperButton"
         >
-          <ChoiceImage alt={choicesList[1].id} src={choicesList[1].imageUrl} />
+          <ChoiceImage2 alt={choicesList[2].id} src={choicesList[2].imageUrl} />
         </BtnElement>
-      </ChoiceContainer2>
-      <BtnElement
-        onClick={this.getMyChoice}
-        type="button"
-        data-testid="scissorsButton"
-      >
-        <ChoiceImage2 alt={choicesList[2].id} src={choicesList[2].imageUrl} />
-      </BtnElement>
-    </ChoiceContainer>
-  )
+      </ChoiceContainer>
+    )
+  }
 
   playTheGameAgain = () => {
     this.setState({gameStatus: gameStatusConstants.playing})
